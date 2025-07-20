@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FeedPostItem from "@/components/FeedPostItem";
-import dummyPosts from "@/dummyPosts";
 import { FlatList, Pressable } from "react-native";
 import { Link } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
+import { Post } from "@/types/models";
 
 export default function FeedScreen() {
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  async function fetchPosts() {
+    const res = await fetch("/api/posts");
+    const data = await res.json();
+    setPosts(data.posts);
+  }
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   return (
     <>
       <FlatList
-        data={dummyPosts}
+        data={posts}
         renderItem={({ item }) => {
           return (
             <Link href={`/post/${item.id}`}>
