@@ -1,34 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import FeedPostItem from "@/components/FeedPostItem";
-import { FlatList, Pressable } from "react-native";
+import { ActivityIndicator, FlatList, Pressable } from "react-native";
 import { Link } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
-import { Post } from "@/types/models";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/providers/AuthProvider";
+import { fetchPosts } from "@/services/postService";
 
 export default function FeedScreen() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { session } = useAuth();
 
-  const { data, error, isLoading } = useQuery({
+  const {
+    data: posts,
+    error,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useQuery({
     queryKey: ["posts"],
-    queryFn: HelloWorld,
+    queryFn: () => fetchPosts(session?.accessToken),
   });
 
-  async function HelloWorld() {
-    return "hello";
+  if (isLoading) {
+    return <ActivityIndicator />;
   }
-
-  console.log({ data, error });
-
-  async function fetchPosts() {
-    const res = await fetch("/api/posts");
-    const data = await res.json();
-    setPosts(data.posts);
-  }
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
 
   return (
     <>
@@ -41,6 +36,8 @@ export default function FeedScreen() {
             </Link>
           );
         }}
+        onRefresh={refetch}
+        refreshing={isRefetching}
       />
       <Link href="/new" asChild>
         <Pressable className="absolute right-5 bottom-5 bg-[#007AFF] rounded-full w-[60px] h-[60px] items-center justify-center shadow-lg">

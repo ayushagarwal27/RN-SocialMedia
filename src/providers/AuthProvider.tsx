@@ -38,7 +38,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const signIn = (handle: string) => {
     const session: Session = {
       user: { id: "1", handle, name: "Ayush", avatar: "" },
-      accessToken: "token",
+      accessToken:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxYTMyMTY2LWZkZWYtNDUyYS05OGRkLWZjNzMzODVkNTM0ZSIsImlhdCI6MTc1MzE3NTk3MCwiZXhwIjoxNzU1NzY3OTcwfQ.L0tCJhLwFVeh_qzZyZpc9eXrOcatuqAE5hVYZX47Gr4",
     };
 
     setSession(session);
