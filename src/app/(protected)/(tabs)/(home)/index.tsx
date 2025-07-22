@@ -4,9 +4,21 @@ import { FlatList, Pressable } from "react-native";
 import { Link } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { Post } from "@/types/models";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function FeedScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["posts"],
+    queryFn: HelloWorld,
+  });
+
+  async function HelloWorld() {
+    return "hello";
+  }
+
+  console.log({ data, error });
 
   async function fetchPosts() {
     const res = await fetch("/api/posts");

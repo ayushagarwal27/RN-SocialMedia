@@ -1,11 +1,11 @@
 import "../../global.css";
-import { Slot, Stack } from "expo-router";
-import {
-  ThemeProvider,
-  DefaultTheme,
-  DarkTheme,
-} from "@react-navigation/native";
+import { Slot } from "expo-router";
+import { ThemeProvider, DefaultTheme } from "@react-navigation/native";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useReactQueryDevTools } from "@dev-plugins/react-query";
+
+const queryClient = new QueryClient();
 
 const CustomTheme = {
   ...DefaultTheme,
@@ -13,10 +13,13 @@ const CustomTheme = {
 };
 
 export default function RootLayout() {
+  useReactQueryDevTools(queryClient);
   return (
     <AuthProvider>
       <ThemeProvider value={CustomTheme}>
-        <Slot />
+        <QueryClientProvider client={queryClient}>
+          <Slot />
+        </QueryClientProvider>
       </ThemeProvider>
     </AuthProvider>
   );
