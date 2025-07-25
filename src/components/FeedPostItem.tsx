@@ -4,6 +4,9 @@ import { Post } from "@/types/models";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { likePostRequest, unlikePostRequest } from "@/services/postService";
+import { useAuth } from "@/providers/AuthProvider";
 
 dayjs.extend(relativeTime);
 
@@ -12,6 +15,24 @@ interface FeedPostItemProps {
 }
 
 export default function FeedPostItem({ post }: FeedPostItemProps) {
+  const { session } = useAuth();
+  const queryClient = useQueryClient();
+  const likeMutation = useMutation({
+    mutationFn: () => likePostRequest(post.id, session?.accessToken!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: () => {},
+  });
+
+  const unlikeMutation = useMutation({
+    mutationFn: () => unlikePostRequest(post.id, session?.accessToken!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: () => {},
+  });
+
   return (
     <View className="flex-row gap-3 p-4 border-b border-b-gray-200">
       <Image
@@ -47,6 +68,14 @@ export default function FeedPostItem({ post }: FeedPostItemProps) {
               name={post.is_liked ? "heart" : "heart-outline"}
               size={20}
               color={post.is_liked ? "crimson" : "gray"}
+              e
+              onPress={() => {
+                if (post.is_liked) {
+                  unlikeMutation.mutate();
+                } else {
+                  likeMutation.mutate();
+                }
+              }}
             />
             <Text className="text-gray-500">{post.likes_count}</Text>
           </View>

@@ -7,6 +7,8 @@ import {
 } from "react";
 import { User } from "@/types/models";
 import * as SecureStore from "expo-secure-store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { signInRequest } from "@/services/authService";
 
 type Session = {
   user: User;
@@ -31,23 +33,37 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const queryClient = useQueryClient();
+
+  const { mutate: signIn } = useMutation({
+    mutationFn: (handle: string) => signInRequest(handle),
+    onSuccess: (data) => {
+      setSession(data);
+      saveSession(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
   useEffect(() => {
     loadSession();
   }, []);
 
-  const signIn = (handle: string) => {
-    const session: Session = {
-      user: { id: "1", handle, name: "Ayush", avatar: "" },
-      accessToken:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxYTMyMTY2LWZkZWYtNDUyYS05OGRkLWZjNzMzODVkNTM0ZSIsImlhdCI6MTc1MzE3NTk3MCwiZXhwIjoxNzU1NzY3OTcwfQ.L0tCJhLwFVeh_qzZyZpc9eXrOcatuqAE5hVYZX47Gr4",
-    };
+  // const signIn = (handle: string) => {
+  //   const session: Session = {
+  //     user: { id: "1", handle, name: "Ayush", avatar: "" },
+  //     accessToken:
+  //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxYTMyMTY2LWZkZWYtNDUyYS05OGRkLWZjNzMzODVkNTM0ZSIsImlhdCI6MTc1MzE3NTk3MCwiZXhwIjoxNzU1NzY3OTcwfQ.L0tCJhLwFVeh_qzZyZpc9eXrOcatuqAE5hVYZX47Gr4",
+  //   };
 
-    setSession(session);
-    saveSession(session);
-  };
+  //   setSession(session);
+  //   saveSession(session);
+  // };
   const signOut = () => {
     setSession(null);
     saveSession(null);
+    queryClient.clear();
   };
 
   const saveSession = async (value: Session | null) => {

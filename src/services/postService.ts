@@ -26,3 +26,54 @@ export async function fetchPost(id: string, accessToken?: string) {
 
   return await res.json();
 }
+
+type CreatePostInput = { content: string };
+
+export async function createPostRequest(
+  post: CreatePostInput,
+  accessToken: string
+) {
+  const response = await fetch("/api/posts", {
+    method: "POST",
+    body: JSON.stringify(post),
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create post");
+  }
+
+  return response.json();
+}
+
+export async function likePostRequest(id: number, accessToken: string) {
+  const response = await fetch(`/api/posts/${id}/like`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to like post");
+  }
+
+  return await response.json();
+}
+
+export async function unlikePostRequest(id: number, accessToken: string) {
+  const response = await fetch(`/api/posts/${id}/like`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to unlike post");
+  }
+
+  return true;
+}

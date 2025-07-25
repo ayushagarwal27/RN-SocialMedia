@@ -15,12 +15,12 @@ const CustomTheme = {
 export default function RootLayout() {
   useReactQueryDevTools(queryClient);
   return (
-    <AuthProvider>
-      <ThemeProvider value={CustomTheme}>
-        <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ThemeProvider value={CustomTheme}>
           <Slot />
-        </QueryClientProvider>
-      </ThemeProvider>
-    </AuthProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
