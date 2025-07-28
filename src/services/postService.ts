@@ -1,5 +1,18 @@
-export async function fetchPosts(accessToken?: string) {
-  const res = await fetch("/api/posts", {
+export async function fetchPosts(
+  pageParam: { cursor?: string; limit?: number },
+  accessToken?: string
+) {
+  const searchParams = new URLSearchParams();
+  if (pageParam.cursor) {
+    searchParams.append("cursor", pageParam.cursor);
+  }
+  if (pageParam.limit) {
+    searchParams.append("limit", pageParam.limit.toString());
+  }
+
+  const url = `/api/posts?${searchParams.toString()}`;
+
+  const res = await fetch(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 
