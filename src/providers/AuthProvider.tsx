@@ -9,6 +9,7 @@ import { User } from "@/types/models";
 import * as SecureStore from "expo-secure-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signInRequest } from "@/services/authService";
+import { Platform } from "react-native";
 
 type Session = {
   user: User;
@@ -67,20 +68,38 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const saveSession = async (value: Session | null) => {
-    if (value) {
-      await SecureStore.setItemAsync("session", JSON.stringify(value));
+    if (Platform.OS === "web") {
+      if (value) {
+        localStorage.setItem("session", JSON.stringify(value));
+      } else {
+        localStorage.removeItem("session");
+      }
     } else {
-      await SecureStore.deleteItemAsync("session");
+      if (value) {
+        await SecureStore.setItemAsync("session", JSON.stringify(value));
+      } else {
+        await SecureStore.deleteItemAsync("session");
+      }
     }
   };
 
   const loadSession = async () => {
-    let sessionData = await SecureStore.getItemAsync("session");
-    if (sessionData) {
-      setSession(JSON.parse(sessionData));
+    if (Platform.OS === "web") {
+      const sessionData = localStorage.getItem("session");
+      if (sessionData) {
+        setSession(JSON.parse(sessionData));
+      } else {
+        setSession(null);
+      }
     } else {
-      setSession(null);
+      let sessionData = await SecureStore.getItemAsync("session");
+      if (sessionData) {
+        setSession(JSON.parse(sessionData));
+      } else {
+        setSession(null);
+      }
     }
+
     setIsLoading(false);
   };
 

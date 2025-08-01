@@ -3,7 +3,8 @@
 # dependencies
 node_modules/
 .env
-
+andorid
+ios
 # Expo
 .expo/
 dist/

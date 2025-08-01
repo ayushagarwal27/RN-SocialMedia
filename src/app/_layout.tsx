@@ -12,6 +12,7 @@ import NetInfo from "@react-native-community/netinfo";
 import { onlineManager } from "@tanstack/react-query";
 import { AppState, AppStateStatus, Platform } from "react-native";
 import { useEffect } from "react";
+import NotificationsProvider from "@/providers/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -46,9 +47,11 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ThemeProvider value={CustomTheme}>
-          <Slot />
-        </ThemeProvider>
+        <NotificationsProvider>
+          <ThemeProvider value={CustomTheme}>
+            <Slot />
+          </ThemeProvider>
+        </NotificationsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

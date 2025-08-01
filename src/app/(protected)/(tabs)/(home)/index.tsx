@@ -47,6 +47,7 @@ export default function FeedScreen() {
     <>
       <FlatList
         data={posts}
+        contentContainerClassName="max-w-lg w-full mx-auto"
         renderItem={({ item }) => {
           return (
             <Link href={`/post/${item.id}`}>
